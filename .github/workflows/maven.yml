@@ -34,5 +34,6 @@ jobs:
         rm -rf ~/.m2/repository/com/elpsykongroo
         
     - run: |
+        mvn install -f base/pom.xml
         mvn clean package install -DskipTests
   
