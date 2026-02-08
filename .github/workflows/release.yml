@@ -11,7 +11,7 @@ jobs:
     secrets: inherit
     with:
       module: auth
-      version: 0.0.2
+      version: 1.0.0
       native: false
       secretPath: kv/app/native/auth
       
@@ -27,7 +27,7 @@ jobs:
     secrets: inherit
     with:
       module: gateway
-      version: 0.0.2
+      version: 1.0.0
       native: false
       secretPath: kv/app/native/gateway
       
@@ -58,7 +58,7 @@ jobs:
     secrets: inherit
     with:
       module: redis
-      version: 0.0.1
+      version: 1.0.0
       native: false
       secretPath: kv/app/native/redis
 
@@ -106,7 +106,7 @@ jobs:
     secrets: inherit
     with:
       module: kafka
-      version: 0.0.1
+      version: 1.0.0
       native: false
       secretPath: kv/app/native/kafka
       
