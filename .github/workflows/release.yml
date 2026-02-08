@@ -15,11 +15,11 @@ jobs:
       native: false
       secretPath: kv/app/native/auth
       
-  deployAuth:
-    needs: auth
-    uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
-    with: 
-      module: auth
+  # deployAuth:
+  #   needs: auth
+  #   uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
+  #   with: 
+  #     module: auth
       
   gateway: 
     needs: auth
@@ -31,11 +31,11 @@ jobs:
       native: false
       secretPath: kv/app/native/gateway
       
-  deployGateway:
-    needs: gateway
-    uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
-    with: 
-      module: gateway
+  # deployGateway:
+  #   needs: gateway
+  #   uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
+  #   with: 
+  #     module: gateway
       
   message: 
     needs: gateway
@@ -47,11 +47,11 @@ jobs:
       native: false
       secretPath: kv/app/native/message
 
-  deployMessage:
-    needs: message
-    uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
-    with: 
-      module: message
+  # deployMessage:
+  #   needs: message
+  #   uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
+  #   with: 
+  #     module: message
       
   redis:
     uses: Labman4/workflow/.github/workflows/native-image-redis.yml@native-image
@@ -62,11 +62,11 @@ jobs:
       native: false
       secretPath: kv/app/native/redis
 
-  deployRedis:
-    needs: redis
-    uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
-    with: 
-      module: redis
+  # deployRedis:
+  #   needs: redis
+  #   uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
+  #   with: 
+  #     module: redis
       
   # elasticsearch:
   #   needs: redis
@@ -85,7 +85,7 @@ jobs:
   #     module: elasticsearch
       
   storage:
-    needs: message
+    needs: redis
     uses: Labman4/workflow/.github/workflows/native-image-base.yml@native-image
     secrets: inherit
     with:
@@ -94,14 +94,14 @@ jobs:
       native: false
       secretPath: kv/app/native/storage
       
-  deployStorage:
-    needs: storage
-    uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
-    with: 
-      module: storage
+  # deployStorage:
+  #   needs: storage
+  #   uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
+  #   with: 
+  #     module: storage
       
   kafka:
-    needs: redis
+    needs: storage
     uses: Labman4/workflow/.github/workflows/native-image-kafka.yml@native-image
     secrets: inherit
     with:
@@ -110,8 +110,8 @@ jobs:
       native: false
       secretPath: kv/app/native/kafka
       
-  deployKafka:
-    needs: kafka
-    uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
-    with: 
-      module: kafka
+  # deployKafka:
+  #   needs: kafka
+  #   uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
+  #   with: 
+  #     module: kafka
