@@ -68,21 +68,21 @@ jobs:
     with: 
       module: redis
       
-  elasticsearch:
-    needs: redis
-    uses: Labman4/workflow/.github/workflows/native-image-elasticsearch.yml@native-image
-    secrets: inherit
-    with:
-      module: elasticsearch
-      version: 1.0.0
-      native: false
-      secretPath: kv/app/native/es
+  # elasticsearch:
+  #   needs: redis
+  #   uses: Labman4/workflow/.github/workflows/native-image-elasticsearch.yml@native-image
+  #   secrets: inherit
+  #   with:
+  #     module: elasticsearch
+  #     version: 1.0.0
+  #     native: false
+  #     secretPath: kv/app/native/es
       
-  deployES:
-    needs: elasticsearch
-    uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
-    with: 
-      module: elasticsearch
+  # deployES:
+  #   needs: elasticsearch
+  #   uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
+  #   with: 
+  #     module: elasticsearch
       
   storage:
     needs: message
@@ -101,7 +101,7 @@ jobs:
       module: storage
       
   kafka:
-    needs: elasticsearch
+    needs: redis
     uses: Labman4/workflow/.github/workflows/native-image-kafka.yml@native-image
     secrets: inherit
     with:
