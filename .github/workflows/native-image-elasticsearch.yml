@@ -78,8 +78,9 @@ jobs:
           echo "path=$(pwd)" >> $GITHUB_ENV
           echo "SECRETS_APP_PATH=${{ inputs.secretPath }}"  >> $GITHUB_ENV
           java --version
-      
-      - uses: getong/elasticsearch-action@v1.2
+          
+      - if: ${{inputs.native}}
+        uses: getong/elasticsearch-action@v1.2
         with:
           elasticsearch version: '7.17.3'
           host port: 9200
@@ -154,13 +155,13 @@ jobs:
       
 #       - uses: peter-evans/create-pull-request@2b011faafdcbc9ceb11414d64d0573f37c774b04
 
-      - if: inputs.moduleName != 0
+      - if: ${{inputs.native  && inputs.moduleName != 0 }}
         run: |
           nohup java -agentlib:native-image-agent=config-merge-dir=${{ env.path }}/${{ env.modulePath }}/src/main/resources/META-INF/native-image/ -jar  ${{ env.modulePath }}/target/${{ inputs.moduleName }}-${{ inputs.version }}.jar > /dev/null 2>&1  & echo "pid=$!" >> $GITHUB_ENV  
           #echo "stopMarker=$(uuidgen)" >> $GITHUB_ENV
         continue-on-error: true 
   
-      - if: inputs.moduleName == 0
+      - if: ${{inputs.native  && inputs.moduleName == 0 }}
         run: |
           nohup java -agentlib:native-image-agent=config-merge-dir=${{ env.path }}/${{ env.modulePath }}/src/main/resources/META-INF/native-image/ -jar  ${{ env.modulePath }}/target/${{ inputs.module }}-${{ inputs.version }}.jar > /dev/null 2>&1  & echo "pid=$!" >> $GITHUB_ENV  
           #echo "stopMarker=$(uuidgen)" >> $GITHUB_ENV
@@ -172,10 +173,12 @@ jobs:
 #         with:
 #           name: test
 #           path: '**/target/surefire-reports/TEST-*.xml'
+
       - run: | 
          ps -ef |grep ${{ env.pid }}
          
-      - run: |
+      - if: inputs.native 
+        run: |
           #echo "::stop-commands::${{ env.stopMarker}}"
           sleep 15
           kill -s 15 ${{ env.pid }}
@@ -198,7 +201,8 @@ jobs:
           docker tag ${{inputs.module}}:native ${{inputs.module}}:${{ github.event.inputs.ref || github.head_ref || github.ref_name }}-native
         continue-on-error: true 
         
-      - run: |
+      - if: inputs.native 
+        run: |
           docker tag ${{inputs.module}}:native ${{inputs.module}}:${{ inputs.version }}-native
         continue-on-error: true   
         
