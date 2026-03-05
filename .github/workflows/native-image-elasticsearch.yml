@@ -174,7 +174,8 @@ jobs:
 #           name: test
 #           path: '**/target/surefire-reports/TEST-*.xml'
 
-      - run: | 
+      - if: inputs.native 
+        run: | 
          ps -ef |grep ${{ env.pid }}
          
       - if: inputs.native 
@@ -185,8 +186,9 @@ jobs:
           sleep 15
           #curl -X POST http://localhost:8080/actuator/shutdown
         continue-on-error: true 
-
-      - run: | 
+        
+      - if: inputs.native 
+        run: | 
          ps -ef |grep ${{ env.pid }}
         
       - run: |
