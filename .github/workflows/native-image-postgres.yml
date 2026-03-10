@@ -131,7 +131,8 @@ jobs:
           username:  ${{ secrets.REGISTRY_PRIVATE_NAME }}
           password:  ${{ secrets.REGISTRY_PRIVATE_PASS }}
           
-      - name: Setup PostgreSQL
+      - if: inputs.native
+        name: Setup PostgreSQL
         uses: Harmon758/postgresql-action@v1.0.0
         with:
           # Version of PostgreSQL to use
@@ -155,13 +156,13 @@ jobs:
       
 #       - uses: peter-evans/create-pull-request@v5.0.2
 
-      - if: inputs.moduleName != 0
+      - if: inputs.native && inputs.moduleName != 0
         run: |
           nohup java -agentlib:native-image-agent=config-merge-dir=${{ env.path }}/${{ env.modulePath }}/src/main/resources/META-INF/native-image/ -jar  ${{ env.modulePath }}/target/${{ inputs.moduleName }}-${{ inputs.version }}.jar > /dev/null 2>&1  & echo "pid=$!" >> $GITHUB_ENV  
           #echo "stopMarker=$(uuidgen)" >> $GITHUB_ENV
         continue-on-error: true 
   
-      - if: inputs.moduleName == 0
+      - if: inputs.native && inputs.moduleName == 0
         run: |
           #java -agentlib:native-image-agent=config-merge-dir=${{ env.path }}/${{ env.modulePath }}/src/main/resources/META-INF/native-image/ -jar  ${{ env.modulePath }}/target/${{ inputs.module }}-${{ inputs.version }}.jar
           nohup java -agentlib:native-image-agent=config-merge-dir=${{ env.path }}/${{ env.modulePath }}/src/main/resources/META-INF/native-image/ -jar  ${{ env.modulePath }}/target/${{ inputs.module }}-${{ inputs.version }}.jar > /dev/null 2>&1  & echo "pid=$!" >> $GITHUB_ENV  
@@ -175,17 +176,20 @@ jobs:
 #           name: test
 #           path: '**/target/surefire-reports/TEST-*.xml'
 
-      - run: | 
+      - if: inputs.native
+        run: | 
          sleep 15
          ps -ef |grep ${{ env.pid }}
-         
-      - run: |
+
+      - if: inputs.native
+        run: |
           kill -s 15 ${{ env.pid }}
           sleep 15
           #curl -X POST http://localhost:8080/actuator/shutdown
         continue-on-error: true 
 
-      - run: | 
+      - if: inputs.native
+        run: | 
          ps -ef |grep ${{ env.pid }}
         
       - run: |
@@ -194,16 +198,19 @@ jobs:
       - if: inputs.native
         run: |
           mvn -P native spring-boot:build-image  -DskipTests -f  ${{ env.path }}/${{ env.modulePath}}/pom.xml
-          
-      - run: |
+      
+      - if: inputs.native
+        run: |
           docker tag ${{inputs.module}}:native ${{inputs.module}}:${{ github.event.inputs.ref || github.head_ref || github.ref_name }}-native
         continue-on-error: true 
         
-      - run: |
+      - if: inputs.native
+        run: |
           docker tag ${{inputs.module}}:native ${{inputs.module}}:${{ inputs.version }}-native
         continue-on-error: true
         
-      - run: |
+      - if: inputs.native  
+        run: |
           docker tag ${{inputs.module}}:native ${{inputs.module}}:${{ github.sha }}-native
         continue-on-error: true 
         
